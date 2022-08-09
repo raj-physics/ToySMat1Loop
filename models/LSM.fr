@@ -1,0 +1,109 @@
+M$ModelName = "LSM";
+
+M$Information = {
+  Authors      -> {"Raj Patil"},
+  Emails       -> {"raj.patil.physics@gmail.com"}
+};
+
+
+(* ************************** *)
+(* *****      vevs      ***** *)
+(* ************************** *)
+
+M$vevs = { {phi,vev} };
+
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+
+  S[3] == {
+      ClassName     -> P,
+      SelfConjugate -> False,
+      Unphysical     -> True,
+      Definitions    -> {  P -> (1/Sqrt[2]) (vev + H + I b)  }
+  },
+  S[1] == {
+      ClassName     -> H,
+      SelfConjugate -> True,
+      Mass            -> {mH,Internal},
+      PropagatorLabel -> "H",
+      PropagatorType  -> Straight,
+      PropagatorArrow -> None
+  },
+  S[2] == {
+      ClassName     -> b,
+      Goldstone       -> A,
+      SelfConjugate -> True,
+      Mass            -> {mb,Internal},
+      PropagatorLabel -> "b",
+      PropagatorType  -> D,
+      PropagatorArrow -> None
+  }
+  
+};
+
+
+(* ************************** *)
+(* *****     Gauge      ***** *)
+(* *****   Parameters   ***** *)
+(* *****   (FeynArts)   ***** *)
+(* ************************** *)
+
+FeynmanGauge = True;
+
+GaugeXi[ S[1]  ] = 1;
+GaugeXi[ S[2]  ] = 1;
+GaugeXi[ S[3]  ] = 1;
+
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+
+M$Parameters = {
+  g4 == {
+    ParameterType    -> External,
+    ParameterName    -> g4,
+    Description      -> "Phi4 coupling"
+  },
+  vev == {
+    ParameterType    -> External,
+    ParameterName    -> vev,
+    Description      -> "Higgs vacuum expectation value"
+  },
+
+  mH == { 
+    ParameterType -> Internal, 
+    ParameterName    -> mH,
+    Definitions   -> {mH :> Sqrt[g4/2] vev}
+  },
+  mb == { 
+    ParameterType -> Internal, 
+    ParameterName    -> mb,
+    Definitions   -> {mb :> 0}
+  }
+
+};
+
+M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {Zv, ZH, Zb, Zc, ZmH, Zmb, Zmc, Zbbbb, ZbbHH, ZHHHH, ZbbH, ZHHH, ZccH}]
+
+
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+LScalarT = Block[{mu}, del[Pbar, mu] del[P, mu]  - (g4/4) ( Pbar P - (vev^2 /2) )^2];
+
+LLSM = LScalarT + LLSMCT;
+
+LLSMCT = Block[{mu,nu}, FR$CT (
+	     + (Zb -1) del[b, mu]^2/2  + (ZH -1) del[H, mu]^2/2 
+	     - (ZmH^2 ZH Zv^2 -1) (g4*H^2*vev^2)/4 
+	     - (Zbbbb Zb^2-1) (b^4*g4)/16 - (ZbbHH Zb ZH -1) (b^2*g4*H^2)/8 - (ZHHHH ZH^2 -1) (g4*H^4)/16 - (ZbbH Zb Sqrt[ZH] Zv -1) (b^2*g4*H*vev)/4 - (ZHHH ZH Sqrt[ZH] Zv -1) (g4*H^3*vev)/4 
+	     -  (Zv^2-1) ZH g4/8 H^2 vev^2 - (Zv^2-1) Zv Sqrt[ZH] g4/4 H  vev^3 - (Zv^2-1) Zb g4/8 b^2 vev^2 
+	     - ((Zv^2-1)vev^2)^2/(16)
+		)];
+

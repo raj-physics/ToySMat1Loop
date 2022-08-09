@@ -5,9 +5,28 @@ M$Information = {
   Emails       -> {"raj.patil.physics@gmail.com"}
 };
 
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+
+  S[1] == {
+      ClassName     -> P,
+      ParticleName    -> "\[Phi]",
+      PropagatorLabel -> "\[Phi]",
+      SelfConjugate -> True,
+      Mass -> mP
+  }
+
+};
+
+
 (* ************************** *)
 (* *****   Parameters   ***** *)
 (* ************************** *)
+
 M$Parameters = {
   g3 == {
     ParameterType    -> External,
@@ -28,17 +47,10 @@ M$Parameters = {
 
 M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {ZmP, ZP, Zg3, Zg4, dv}];
 
-M$ClassesDescription = {
 
-  S[1] == {
-      ClassName     -> P,
-      ParticleName    -> "\[Phi]",
-      PropagatorLabel -> "\[Phi]",
-      SelfConjugate -> True,
-      Mass -> mP
-  }
-
-};
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
 
 LPhi34T = 1/2 del[P, mu] del[P, mu] - 1/2 mP^2*P^2 - 1/(4!) g4*P^4 - 1/(3!) g3*P^3;
 LPhi34CT =  1/2 FR$CT (ZP-1) del[P, mu] del[P, mu] - 1/2 mP^2 FR$CT (ZmP^2 ZP-1)*P^2 - 1/(4!) FR$CT (Zg4 ZP^2-1)*g4*P^4 - 1/(3!) FR$CT (Zg3 ZP^(3/2)-1)*g3*P^3 - FR$CT dv Sqrt[ZP] mP^2 P - FR$CT dv ZP^2 1/2 g3 P^2 - FR$CT dv ZP Sqrt[ZP] 1/(3!) g4 P^3;
