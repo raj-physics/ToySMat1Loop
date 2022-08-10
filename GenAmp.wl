@@ -90,7 +90,7 @@ temp4[exp4_]:=exp4//FCReplaceD[#,D->4-Epsilon]&//FCHideEpsilon[Normal[Series[#,{
 amp1LSimplify[sub__,deltas__,bar_:False][amp__]:=Module[{Amp,AmpCT},
 Amp=amp[[1]]//PlusToList//TermByTerm[(#//temp1[sub]//temp2//temp3)&,bar];
 AmpCT=amp[[2]]//temp1[sub](*//Total*);
-Return[(Amp+AmpCT)//temp4//SelectNotFree2[#,deltas]&];
+Return[(Amp+AmpCT)//temp4//Expand//SelectNotFree2[#,deltas]&];
 ];
 
 

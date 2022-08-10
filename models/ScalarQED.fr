@@ -1,0 +1,103 @@
+M$ModelName = "ScalarQED";
+
+M$Information = {
+  Authors      -> {"Raj Patil"},
+  Emails       -> {"raj.patil.physics@gmail.com"}
+};
+
+
+(* ************************** *)
+(* *****  Gauge groups  ***** *)
+(* ************************** *)
+
+M$GaugeGroups = {
+  U1  == { 
+    Abelian          -> True,  
+    CouplingConstant -> e, 
+    GaugeBoson       -> A, 
+    Charge           -> Q
+  }
+};
+
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+
+  V[1] == { 
+    ClassName       -> A, 
+    SelfConjugate   -> True,  
+    Mass            -> 0,  
+    Width           -> 0,  
+    ParticleName    -> "a", 
+    PropagatorLabel -> "a", 
+    PropagatorType  -> W, 
+    PropagatorArrow -> None,
+    FullName        -> "Photon"
+  },
+  
+  S[1] == {
+      ClassName     -> P,
+      ParticleName    -> "\[Phi]",
+      PropagatorLabel -> "\[Phi]",
+      SelfConjugate -> False,
+      QuantumNumbers   -> {Q -> -1},
+      PropagatorType   -> Straight,
+      PropagatorArrow  -> Forward,
+      Mass -> mP
+  }
+};
+
+
+(* ************************** *)
+(* *****     Gauge      ***** *)
+(* *****   Parameters   ***** *)
+(* *****   (FeynArts)   ***** *)
+(* ************************** *)
+
+FeynmanGauge = True;
+
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+
+M$Parameters = {
+  e == {
+    ParameterType    -> External,
+    ParameterName    -> e,
+    Description      -> "QED coupling"
+  },
+  mP == {
+    ParameterType    -> External,
+    ParameterName    -> mP,
+    Description      -> "Scalar mass"
+  },
+  g4 == {
+    ParameterType    -> External,
+    ParameterName    -> g4,
+    Description      -> "Phi4 coupling"
+  }
+};
+
+M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {ZmP, ZA, ZP, ZPPPP, ZAPP, ZAAPP}]
+
+
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+LGaugeT = Block[{mu,nu}, -1/4 FS[A,mu,nu] FS[A,mu,nu] ];
+
+LScalarT = Block[{mu},  DC[Pbar, mu] DC[P, mu] - mP^2 Pbar P  - (g4/4) ( Pbar P )^2];
+
+LScalarQED = LGaugeT + LScalarT + LScalarQEDCT;
+
+LScalarQEDCT = Block[{mu,nu}, FR$CT (
+	     -(ZA -1) 1/4 FS[A, mu, nu] FS[A, mu, nu]
+	     + (ZP-1) del[Pbar, mu]  del[P, mu]  - (ZmP^2 ZP -1)  mP^2 Pbar P - (ZPPPP ZP^2 -1)  (g4/4)  ( Pbar P )^2
+	     + I (ZAPP ZP Sqrt[ZA] -1) e (- Pbar del[P, mu] A[mu] + P del[Pbar, mu] A[mu] ) + (ZAAPP ZP ZA -1) e^2 Pbar P A[mu] A[mu]
+	     )];
+
