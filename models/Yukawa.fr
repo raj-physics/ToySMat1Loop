@@ -1,0 +1,91 @@
+M$ModelName = "Yukawa";
+
+M$Information = {
+  Authors      -> {"Raj Patil"},
+  Emails       -> {"raj.patil.physics@gmail.com"}
+};
+
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+
+  S[1] == {
+      ClassName     -> P,
+      ParticleName    -> "\[Phi]",
+      PropagatorLabel -> "\[Phi]",
+      SelfConjugate -> True,
+      Mass -> mP
+  },
+  F[1] == {
+    ClassName        -> F,
+    SelfConjugate    -> False,
+    Mass             -> mF,
+    ParticleName     -> "\[Psi]",
+    PropagatorLabel  -> "\[Psi]",
+    PropagatorType   -> Straight,
+    PropagatorArrow  -> Forward,
+    ParticleName     -> "F-",
+    AntiParticleName -> "F+"
+  }
+};
+
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+
+M$Parameters = {
+  g3 == {
+    ParameterType    -> External,
+    ParameterName    -> g3,
+    Description      -> "g3"
+  },
+  g4 == {
+    ParameterType    -> External,
+    ParameterName    -> g4,
+    Description      -> "g4"
+  },
+  mP == {
+    ParameterType    -> External,
+    ParameterName    -> mP,
+    Description      -> "mP"
+  },
+  mF == {
+    ParameterType    -> External,
+    ParameterName    -> mF,
+    Description      -> "mF"
+  },
+  y == {
+    ParameterType    -> External,
+    ParameterName    -> y,
+    Description      -> "y"
+  },
+  y5 == {
+    ParameterType    -> External,
+    ParameterName    -> y5,
+    Description      -> "y5"
+  }
+};
+
+M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {ZmP, ZP, Zg3, Zg4, dv, ZmF, ZF, Zy, Zy5, dCMA}];
+
+
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+
+LPhi34T = 1/2 del[P, mu] del[P, mu] - 1/2 mP^2*P^2 - 1/(4!) g4*P^4 - 1/(3!) g3*P^3;
+LPhi34CT =  1/2 FR$CT (ZP-1) del[P, mu] del[P, mu] - 1/2 mP^2 FR$CT (ZmP^2 ZP-1)*P^2 - 1/(4!) FR$CT (Zg4 ZP^2-1)*g4*P^4 - 1/(3!) FR$CT (Zg3 ZP^(3/2)-1)*g3*P^3 - FR$CT dv Sqrt[ZP] mP^2 P - FR$CT dv ZP^2 1/2 g3 P^2 - FR$CT dv ZP Sqrt[ZP] 1/(3!) g4 P^3;
+
+LFermionT = Block[{mu,nu}, I Fbar.Ga[mu].del[F, mu] - mF Fbar.F ];
+LFermionCT = Block[{mu,nu}, FR$CT (ZF-1) I Fbar.Ga[mu].del[F, mu] - FR$CT (ZF ZmF -1) mF Fbar.F - FR$CT dCMA I mF Fbar.(ProjP - ProjM).F];
+
+LPhiFermionT = - y P Fbar.F - I y5 P Fbar.(ProjP - ProjM).F;
+LPhiFermionCT = - FR$CT (Zy ZF Sqrt[ZP] -1) y P Fbar.F - FR$CT (Zy5 ZF Sqrt[ZP] -1) I y5 P Fbar.(ProjP - ProjM).F - FR$CT dv y Fbar.F - FR$CT dv I y5 Fbar.(ProjP - ProjM).F - FR$CT dCMA I y P Fbar.(ProjP - ProjM).F + FR$CT dCMA y5 P Fbar.F ;
+
+LYukawa = LPhi34T + LFermionT + LPhiFermionT + LPhi34CT + LFermionCT + LPhiFermionCT ;
+
