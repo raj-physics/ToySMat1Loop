@@ -1,0 +1,98 @@
+M$ModelName = "QED";
+
+M$Information = {
+  Authors      -> {"Raj Patil"},
+  Emails       -> {"raj.patil.physics@gmail.com"}
+};
+
+
+(* ************************** *)
+(* *****  Gauge groups  ***** *)
+(* ************************** *)
+
+M$GaugeGroups = {
+  U1  == { 
+    Abelian          -> True,  
+    CouplingConstant -> e, 
+    GaugeBoson       -> A, 
+    Charge           -> Q
+  }
+};
+
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+
+  V[1] == { 
+    ClassName       -> A, 
+    SelfConjugate   -> True,  
+    Mass            -> 0,  
+    Width           -> 0,  
+    ParticleName    -> "A", 
+    PropagatorLabel -> "a", 
+    PropagatorType  -> W, 
+    PropagatorArrow -> None,
+    FullName        -> "Photon"
+  },
+  
+  F[1] == {
+    ClassName        -> P,
+    SelfConjugate    -> False,
+    Mass             -> mP,
+    Width            -> 0,
+    QuantumNumbers   -> {Q -> -1},
+    PropagatorLabel -> "\[Psi]",
+    PropagatorType   -> Straight,
+    PropagatorArrow  -> Forward,
+    ParticleName     -> "\[Psi]-",
+    AntiParticleName -> "\[Psi]+",
+    FullName         -> "Electron" 
+  }
+};
+
+
+(* ************************** *)
+(* *****     Gauge      ***** *)
+(* *****   Parameters   ***** *)
+(* *****   (FeynArts)   ***** *)
+(* ************************** *)
+
+FeynmanGauge = True;
+
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+
+M$Parameters = {
+  e == {
+    ParameterType    -> External,
+    ParameterName    -> e,
+    Description      -> "QED"
+  },
+  mP == {
+    ParameterType    -> External,
+    ParameterName    -> mP,
+    Description      -> "QED"
+  }
+};
+
+M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {ZmP, ZA, ZP, Ze, ZAPP }];
+
+
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+LGaugeT = Block[{mu,nu}, -1/4 FS[A,mu,nu] FS[A,mu,nu] ];
+
+LFermionsT = Block[{mu,nu}, I( Pbar.Ga[mu].DC[P, mu]  ) - mP * Pbar.P ];
+
+LQED = LGaugeT + LFermionsT + LQEDCT;
+
+LQEDCT = Block[{mu,nu}, FR$CT (-(ZA -1) 1/4 FS[A, mu, nu] FS[A, mu, nu]
+		+ (ZP-1) I Pbar.Ga[mu].del[P,mu] - (ZP ZmP -1) mP * Pbar.P
+		- (ZP Sqrt[ZA] ZAPP - 1) e * Pbar.Ga[mu].P*A[mu]) ];
