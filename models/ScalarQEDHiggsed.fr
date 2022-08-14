@@ -153,19 +153,19 @@ M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {Zv, Z
 
 LGaugeT = Block[{mu,nu}, -1/4 FS[A,mu,nu] FS[A,mu,nu] ];
 
-LScalarT = Block[{mu}, DC[Pbar, mu] DC[P, mu]  - (g4/4) ( Pbar P - (vev^2 /2) )^2 ];
+LScalarT = Block[{mu}, DC[Pbar, mu].DC[P, mu]  - (g4/4) ( Pbar.P - (vev^2 /2) )^2 ];
 
-LGaugeFixing = Block[{mu,nu}, -1/(2 GaugeXi[V[1]])  del[A[mu], mu]^2 - e vev A[mu] del[b, mu] - 1/2 GaugeXi[V[1]] e^2 vev^2 b^2 ];
+LGaugeFixing = Block[{mu,nu}, (* -1/(2 GaugeXi[V[1]])  del[A[mu], mu]^2 *) - e vev A[mu] del[b, mu] - 1/2 GaugeXi[V[1]] e^2 vev^2 b^2 ];
 
-LGhost = Block[{mu}, - del[cbar, mu]*del[c, mu] - GaugeXi[V[1]] e^2 vev^2 cbar*c -  GaugeXi[V[1]] e^2 vev H cbar*c ];
+LGhost = Block[{mu},  - cbar.del[ del[c, mu], mu] - GaugeXi[V[1]] e^2 vev^2 cbar.c -  GaugeXi[V[1]] e^2 vev H cbar.c ];
 
 
 LScalarQEDHiggsed = LGaugeT + LScalarT + LGaugeFixing + LGhost + LScalarQEDCT;
 
 LScalarQEDCT = Block[{mu,nu}, FR$CT (
-	     + (Zb -1) del[b, mu]^2/2 - (Zc -1) del[cbar, mu]*del[c, mu] + (ZH -1) del[H, mu]^2/2 - (ZA -1) ( 1/4 FS[A, mu, nu] FS[A, mu, nu] + (del[A[mu], nu]*del[A[nu], mu])/(2*GaugeXi[V[1]]) )
-	     - (ZmH^2 ZH Zv^2 -1) (g4*H^2*vev^2)/4 + (ZmA^2 ZA Zv^2 -1) (e^2*vev^2*A[mu]^2)/2 - (Zmb^2 Zb Zv^2 -1) (b^2*e^2*vev^2*GaugeXi[V[1]])/2 - (Zmc^2 Zc Zv^2 -1) cbar*c*e^2*vev^2*GaugeXi[V[1]]
-	     - (Zbbbb Zb^2-1) (b^4*g4)/16 - (ZbbHH Zb ZH -1) (b^2*g4*H^2)/8 - (ZHHHH ZH^2 -1) (g4*H^4)/16 - (ZbbH Zb Sqrt[ZH] Zv -1) (b^2*g4*H*vev)/4 - (ZHHH ZH Sqrt[ZH] Zv -1) (g4*H^3*vev)/4 + (ZAAbb Zb ZA -1) (b^2*e^2*A[mu]^2)/2 + (ZAAHH ZH ZA -1) (e^2*H^2*A[mu]^2)/2 + (ZAAH ZA Sqrt[ZH] Zv-1) e^2*H*vev*A[mu]^2 + (ZAbH Sqrt[Zb ZA ZH] -1) (+ e*H*A[mu]*del[b, mu] -  b*e*A[mu]*del[H, mu]) - (ZccH Zc Sqrt[ZH] Zv-1) cbar*c*e^2*H*vev*GaugeXi[V[1]]
+	     + (Zb -1) del[b, mu]^2/2 - (Zc -1) cbar.del[ del[c, mu], mu] + (ZH -1) del[H, mu]^2/2 - (ZA -1) ( 1/4 FS[A, mu, nu] FS[A, mu, nu] (* + (del[A[mu], nu]*del[A[nu], mu])/(2*GaugeXi[V[1]]) *)  )
+	     - (ZmH^2 ZH Zv^2 -1) (g4*H^2*vev^2)/4 + (ZmA^2 ZA Zv^2 -1) (e^2*vev^2*A[mu]^2)/2 - (Zmb^2 Zb Zv^2 -1) (b^2*e^2*vev^2*GaugeXi[V[1]])/2 - (Zmc^2 Zc Zv^2 -1) cbar.c*e^2*vev^2*GaugeXi[V[1]]
+	     - (Zbbbb Zb^2-1) (b^4*g4)/16 - (ZbbHH Zb ZH -1) (b^2*g4*H^2)/8 - (ZHHHH ZH^2 -1) (g4*H^4)/16 - (ZbbH Zb Sqrt[ZH] Zv -1) (b^2*g4*H*vev)/4 - (ZHHH ZH Sqrt[ZH] Zv -1) (g4*H^3*vev)/4 + (ZAAbb Zb ZA -1) (b^2*e^2*A[mu]^2)/2 + (ZAAHH ZH ZA -1) (e^2*H^2*A[mu]^2)/2 + (ZAAH ZA Sqrt[ZH] Zv-1) e^2*H*vev*A[mu]^2 + (ZAbH Sqrt[Zb ZA ZH] -1) (+ e*H*A[mu]*del[b, mu] -  b*e*A[mu]*del[H, mu]) - (ZccH Zc Sqrt[ZH] Zv-1) cbar.c *e^2*H*vev*GaugeXi[V[1]]
 	     -  (Zv^2-1) ZH g4/8 H^2 vev^2 - (Zv^2-1) Zv Sqrt[ZH] g4/4 H  vev^3 - (Zv^2-1) Zb g4/8 b^2 vev^2 
 	     - ((Zv^2-1)vev^2)^2/(16)
 	     	)];

@@ -96,11 +96,11 @@ C[ S[1] , S[1] , V[1] , V[1] ] == {{(2*I)*e^2, (2*I)*e^2*(-1 + ZA*ZAAHH*ZH)}},
 
 C[ S[1] , V[1] , V[1] ] == {{(2*I)*e^2*vev, (2*I)*e^2*vev*(-1 + ZA*ZAAH*Sqrt[ZH]*Zv)}},
 
-C[ V[1] , V[1] ] == {{0, ((-I)*(1 - ZA - FAGaugeXi[V[1]] + ZA*FAGaugeXi[V[1]]))/FAGaugeXi[V[1]]}, {0, 0}, {0, I*e^2*vev^2*(-1 + ZA*ZmA^2*Zv^2)}, {0, I*(-1 + ZA)}},
+C[ V[1] , V[1] ] == {{0, (-I)*(-1 + ZA)}, {0, I*e^2*vev^2*(-1 + ZA*ZmA^2*Zv^2)}, {0, I*(-1 + ZA)}},
 
 C[ S[2] , S[1] , V[1] ] == {{e, e*(-1 + ZAbH*Sqrt[ZA*Zb*ZH])}, {-e, -(e*(-1 + ZAbH*Sqrt[ZA*Zb*ZH]))}},
 
-C[ -U[1] , U[1] ] == {{0, (-I)*e^2*vev^2*(-1 + Zc*Zmc^2*Zv^2)*FAGaugeXi[V[1]]}, {0, I*(-1 + Zc)}},
+C[ -U[1] , U[1] ] == {{0, (-I)*e^2*vev^2*(-1 + Zc*Zmc^2*Zv^2)*FAGaugeXi[V[1]]}, {0, I*(-1 + Zc)}, {0, 0}},
 
 C[ S[1] , -U[1] , U[1] ] == {{(-I)*e^2*vev*FAGaugeXi[V[1]], (-I)*e^2*vev*(-1 + Zc*ZccH*Sqrt[ZH]*Zv)*FAGaugeXi[V[1]]}}
 

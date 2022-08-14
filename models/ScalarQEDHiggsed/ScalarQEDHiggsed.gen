@@ -121,12 +121,12 @@ G[+1][s1 S[j1], s2 V[j2], s3 V[j3]].{FAMetricTensor[li2 ,li3 ]},
 	 (* UU *)
 
 AnalyticalCoupling[s1 U[j1, mom1], s2 U[j2, mom2] ] ==
-G[+1][s1 U[j1], s2 U[j2]].{1, FAScalarProduct[mom1,mom2]},
+G[+1][s1 U[j1], s2 U[j2]].{1, FAScalarProduct[mom2,mom2], FAScalarProduct[mom1,mom1]},
 
 	 (* VV *)
 
 AnalyticalCoupling[s1 V[j1, mom1, {li1}], s2 V[j2, mom2, {li2}] ] ==
-G[+1][s1 V[j1], s2 V[j2]].{FAFourVector[mom1, li2]FAFourVector[mom2, li1], FAFourVector[mom1, li1]FAFourVector[mom2, li2], FAMetricTensor[li1 ,li2 ], FAMetricTensor[li1 ,li2 ]FAScalarProduct[mom1,mom2]}
+G[+1][s1 V[j1], s2 V[j2]].{FAFourVector[mom1, li2]FAFourVector[mom2, li1], FAMetricTensor[li1 ,li2 ], FAMetricTensor[li1 ,li2 ]FAScalarProduct[mom1,mom2]}
 }
 
 (* FlippingRules: the flipping rules determines how Dirac
