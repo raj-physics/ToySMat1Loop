@@ -1,0 +1,113 @@
+M$ModelName = "YM";
+
+M$Information = {
+  Authors      -> {"Raj Patil"},
+  Emails       -> {"raj.patil.physics@gmail.com"}
+};
+
+
+(* ************************** *)
+(* *****  Gauge groups  ***** *)
+(* ************************** *)
+
+M$GaugeGroups = {
+  SU3C == { 
+    Abelian           -> False, 
+    CouplingConstant  -> g, 
+    GaugeBoson        -> G,
+    StructureConstant -> f, 
+    Representations   -> {T,Colour}
+  } 
+};
+
+
+(* ************************** *)
+(* *****    Indices     ***** *)
+(* ************************** *)
+
+IndexRange[Index[Gluon     ]] = NoUnfold[Range[8]];
+IndexRange[Index[Colour    ]] = NoUnfold[Range[3]]; 
+
+IndexStyle[Gluon,      a];
+IndexStyle[Colour,     m];
+
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+
+  V[1] == { 
+    ClassName       -> G, 
+    SelfConjugate   -> True,
+    Indices         -> {Index[Gluon]},
+    Mass            -> 0,  
+    Width           -> 0,  
+    ParticleName    -> "G", 
+    PropagatorLabel -> "G", 
+    PropagatorType  -> W, 
+    PropagatorArrow -> None,
+    FullName        -> "Gluon"
+  },
+  U[1] == { 
+    ClassName       -> c, 
+    SelfConjugate   -> False,
+    Indices         -> {Index[Gluon]},
+    Ghost           -> G,
+    Mass            -> 0,  
+    PropagatorLabel -> "c",
+    PropagatorType  -> GhostDash,
+    PropagatorArrow -> Forward
+  }
+
+};
+
+
+(* ************************** *)
+(* *****     Gauge      ***** *)
+(* *****   Parameters   ***** *)
+(* *****   (FeynArts)   ***** *)
+(* ************************** *)
+
+FeynmanGauge = True;
+
+GaugeXi[ U[1]  ] = 1;
+
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+
+M$Parameters = {
+  g == {
+    ParameterType    -> External,
+    ParameterName    -> g,
+    Description      -> "YM coupling"
+  }
+};
+
+M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {ZG, Zc, Zg, ZG3, ZG4, ZGcc}]
+
+	
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+LGaugeT = Block[{mu,nu,a1,a2,a3,a4,a5},
+			(* -1/4 FS[G,mu,nu,a1] FS[G,mu,nu,a1] *)
+			-1/4 del[G[mu,a1],nu] del[G[mu,a1],nu] + 1/2 del[G[mu,a1],nu] del[G[nu,a1],mu] -1/4 del[G[nu,a1],mu] del[G[nu,a1],mu]
+	  		+ 1/2 g f[a1,a2,a3] del[G[mu,a1],nu] G[mu,a2] G[nu,a3] -  1/2 g f[a1,a2,a3] del[G[nu,a1],mu] G[mu,a2] G[nu,a3]
+			- 1/4 g^2 f[a1,a2,a3]  G[mu,a2] G[nu,a3] f[a1,a4,a5] G[mu,a4] G[nu,a5]
+			];
+
+LGhost = Block[{mu,a1,a2,a3}, - cbar[a1].del[ del[c[a1],mu] ,mu] - g cbar[a1].del[  f[a1,a2,a3] G[mu,a2] c[a3]  ,mu] ];
+
+LYM = LGaugeT + LGhost + LYMCT;
+
+LYMCT = Block[{mu,nu,a1,a2,a3,a4,a5}, FR$CT (
+	  (ZG-1) (-1/4 del[G[mu,a1],nu] del[G[mu,a1],nu] + 1/2 del[G[mu,a1],nu] del[G[nu,a1],mu] -1/4 del[G[nu,a1],mu] del[G[nu,a1],mu])
+	  - (Zc-1) cbar[a1].del[del[c[a1],mu],mu]
+	  - (ZGcc Sqrt[ZG] Zc -1) g  del[G[mu,a2],mu] cbar[a1].c[a3] f[a1,a2,a3] - (ZGcc Sqrt[ZG] Zc-1) g cbar[a1].del[c[a3],mu] f[a1,a2,a3] G[mu,a2]
+	  + (ZG3 ZG Sqrt[ZG] -1) 1/2 g f[a1,a2,a3] del[G[mu,a1],nu] G[mu,a2] G[nu,a3] - (ZG3 ZG Sqrt[ZG] -1) 1/2 g f[a1,a2,a3] del[G[nu,a1],mu] G[mu,a2] G[nu,a3] - (ZG4 ZG^2  -1) 1/4 g^2 f[a1,a2,a3]  G[mu,a2] G[nu,a3] f[a1,a4,a5]  G[mu,a4] G[nu,a5]
+	  )];
