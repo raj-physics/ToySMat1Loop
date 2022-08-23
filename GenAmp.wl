@@ -15,7 +15,7 @@
 $FeynCalcStartupMessages = False;
 
 
-$LoadAddOns={"FeynArts"};
+$LoadAddOns={"FeynArts","FeynHelpers"};
 Needs["FeynCalc`"];
 
 
