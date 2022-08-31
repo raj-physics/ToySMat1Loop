@@ -1,0 +1,150 @@
+M$ModelName = "TwoScalar4";
+
+M$Information = {
+  Authors      -> {"Raj Patil"},
+  Emails       -> {"raj.patil.physics@gmail.com"}
+};
+
+
+(* ************************** *)
+(* *****    Indices     ***** *)
+(* ************************** *)
+
+IndexRange[Index[Gen]] = Range[2];
+IndexStyle[Gen,a];
+
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+  S[1] == {ClassName     -> Phi,
+           ClassMembers  -> {Phi1, Phi2},
+	   SelfConjugate -> True,
+	   Indices       -> {Index[Gen]},
+	   FlavorIndex   -> Gen,
+	   Mass   	 -> {{m1, External}, {m2, External}}
+  },
+  S[2] == {ClassName     -> phi,
+           ClassMembers  -> {phi1, phi2},
+	   SelfConjugate -> True,
+	   Indices       -> {Index[Gen]},
+	   FlavorIndex   -> Gen,
+	   Unphysical    -> True,
+	   Definitions   -> {phi[i_] :> Module[{j}, UU[i,j] Phi[j]]}
+  }
+};
+
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+
+M$Parameters = {
+  g40 == {
+    ParameterType    -> External,
+    ParameterName    -> g40,
+    Description      -> "g40"
+  },
+  g04 == {
+    ParameterType    -> External,
+    ParameterName    -> g04,
+    Description      -> "g04"
+  },
+  g22 == {
+    ParameterType    -> External,
+    ParameterName    -> g22,
+    Description      -> "g22"
+  },
+  g31 == {
+    ParameterType    -> External,
+    ParameterName    -> g31,
+    Description      -> "g31"
+  },
+  g13 == {
+    ParameterType    -> External,
+    ParameterName    -> g13,
+    Description      -> "g13"
+  },
+  m1 == {
+    ParameterType    -> External,
+    ParameterName    -> m1,
+    Description      -> "m1"
+  },
+  m2 == {
+    ParameterType    -> External,
+    ParameterName    -> m2,
+    Description      -> "m2"
+  },
+  th == {
+    ParameterType    -> External,
+    ParameterName    -> th,
+    Description      -> "th"
+  },
+  MM == {
+    ParameterType    -> Internal,
+    ComplexParameter -> False,
+    Indices          -> {Index[Gen], Index[Gen]},
+    Definitions      -> {MM[1,1] :> m1^2,
+    	      	     	 MM[1,2] :> 0,
+	      	     	 MM[2,1] :> 0,
+	      	     	 MM[2,2] :> m2^2},
+    Description      -> "Mass matrix"
+  },
+  Zm1 == {ParameterType    -> External },
+  Zm2 == {ParameterType    -> External },
+  ZM == {
+    ParameterType    -> Internal,
+    ComplexParameter -> False,
+    Indices          -> {Index[Gen], Index[Gen]},
+    Definitions      -> {ZM[1,1] :> Zm1^2,
+    	      	     	 ZM[1,2] :> 0,
+	      	     	 ZM[2,1] :> 0,
+	      	     	 ZM[2,2] :> Zm2^2},
+    Description      -> "Mass renormalization matrix"
+  },
+  UU == {
+    ParameterType    -> Internal,
+    ComplexParameter -> False,
+    Indices          -> {Index[Gen], Index[Gen]},
+    Definitions      -> {UU[1,1] :> 1,
+    	      	     	 UU[1,2] :> th,
+	      	     	 UU[2,1] :> -th,
+	      	     	 UU[2,2] :> 1},
+    Description      -> "Rotation matrix"
+  }
+};
+
+M$Parameters = Join[M$Parameters, (# == {ParameterType -> External}) & /@ {ZP, Zg40, Zg22, Zg04, Zg31, Zg13}];
+
+
+(* ************************** *)
+(* *****     Gauge      ***** *)
+(* *****   Parameters   ***** *)
+(* *****   (FeynArts)   ***** *)
+(* ************************** *)
+
+GaugeXi[ S[1]  ] = 1;
+
+
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+LTwoScalar4T = Module[{a,b}, 1/2 del[Phi[a], mu] del[Phi[a], mu] - 1/2 Phi[a] MM[a,b] Phi[b]	
+			  - 1/(4!) g40 Phi[1]^4 - 1/(4!) g04 Phi[2]^4 - 1/(4) g22 Phi[1]^2 Phi[2]^2 
+			  - 1/(3!) g31 Phi[1]^3 Phi[2] - 1/(3!) g13 Phi[1] Phi[2]^3
+			  ];
+
+LTwoScalar4 = LTwoScalar4T + LTwoScalar4CT;
+
+LTwoScalar4CT = Module[{a,b,c}, FR$CT(
+				(ZP 1/2 del[phi[a], mu] del[phi[a], mu] - 1/2 del[Phi[a], mu] del[Phi[a], mu]) - (ZP 1/2 phi[a] ZM[a,c] MM[c,b] phi[b] - 1/2  Phi[a] MM[a,b] Phi[b])
+			  	- (ZP^2 Zg40 1/(4!) g40 phi[1]^4 - 1/(4!) g40 Phi[1]^4)
+				- (ZP^2 Zg04 1/(4!) g04 phi[2]^4 - 1/(4!) g04 Phi[2]^4)
+				- (ZP^2 Zg22 1/(4)  g22 phi[1]^2 phi[2]^2 - g22 Phi[1]^2 Phi[2]^2) 
+			  	- (ZP^2 Zg31 1/(3!) g31 phi[1]^3 phi[2] - 1/(3!) g31 Phi[1]^3 Phi[2])
+				- (ZP^2 Zg13 1/(3!) g13 phi[1] phi[2]^3 - 1/(3!) g13 Phi[1] Phi[2]^3) 
+				)];
+
